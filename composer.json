@@ -1,0 +1,19 @@
+{
+	"name": "siteimpulse/magento2-monitoring",
+	"description": "Monitor your Website uptime with www.supermonitoring.com services - and have all the charts and tables displayed in your Admin panel.",
+	"type": "magento2-module",
+	"author": "SITEIMPULSE <https://www.siteimpulse.com/>",
+	"version": "1.0.0",
+	"license": [
+		"OSL-3.0",
+		"AFL-3.0"
+	],
+	"autoload": {
+		"files": [
+			"registration.php"
+		],
+		"psr-4": {
+			"Siteimpulse\\Monitoring\\": ""
+		}
+	}
+}

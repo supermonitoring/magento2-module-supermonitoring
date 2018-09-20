@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!--
+/**
+ *
+ * @category    Super Monitoring
+ * @package     Siteimpulse_Monitoring
+ * @author      SITEIMPULSE
+ * @copyright   SITEIMPULSE (https://www.siteimpulse.com/)
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="siteimpulse" translate="label" sortOrder="450">
+            <label>Super Monitoring</label>
+        </tab>
+        <section id="monitoring" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Settings</label>
+            <tab>siteimpulse</tab>
+            <resource>Siteimpulse_Monitoring::config_monitoring</resource>
+            <group id="hint" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+                <frontend_model>Siteimpulse\Monitoring\Block\Adminhtml\System\Config\Fieldset\Hint</frontend_model>
+            </group>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Settings</label>
+                <field id="active" translate="label" type="select" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Status</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+                <field id="token" translate="label" type="text" sortOrder="15" showInDefault="1" showInStore="0" showInWebsite="0">
+                    <label>Authorization token</label>
+                    <backend_model>Siteimpulse\Monitoring\Model\Config\Backend\Token</backend_model>
+                    <comment><![CDATA[You can find the token in your Account Settings at <a href='https://www.supermonitoring.com' target='_blank'>www.supermonitoring.com</a>.]]></comment>
+                    <depends>
+                        <field id="*/*/active">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

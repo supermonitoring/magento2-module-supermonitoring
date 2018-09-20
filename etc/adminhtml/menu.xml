@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Siteimpulse_Monitoring::manager" title="Super Monitoring" module="Siteimpulse_Monitoring" sortOrder="10" parent="Magento_Reports::report" resource="Siteimpulse_Monitoring::manager" dependsOnConfig="monitoring/general/token"/>
+        <add id="Siteimpulse_Monitoring::monitoring" title="Your Checks" module="Siteimpulse_Monitoring" sortOrder="10" parent="Siteimpulse_Monitoring::manager"
+                action="monitoring/monitoring" resource="Siteimpulse_Monitoring::monitoring" dependsOnConfig="monitoring/general/token"/>
+        <add id="Siteimpulse_Monitoring::monitoring_account" title="Your Account" module="Siteimpulse_Monitoring" sortOrder="20" parent="Siteimpulse_Monitoring::manager"
+                action="monitoring/monitoring/account" resource="Siteimpulse_Monitoring::monitoring" dependsOnConfig="monitoring/general/token"/>
+        <add id="Siteimpulse_Monitoring::monitoring_contact" title="Your Contacts" module="Siteimpulse_Monitoring" sortOrder="30" parent="Siteimpulse_Monitoring::manager"
+                action="monitoring/monitoring/contact" resource="Siteimpulse_Monitoring::monitoring" dependsOnConfig="monitoring/general/token"/>
+    </menu>
+</config>
