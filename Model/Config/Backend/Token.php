@@ -4,93 +4,99 @@
  * @category    Super Monitoring
  * @package     Siteimpulse_Monitoring
  * @author      SITEIMPULSE
- * @copyright   SITEIMPULSE (https://www.siteimpulse.com/)
- * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
 namespace Siteimpulse\Monitoring\Model\Config\Backend;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\Message\ManagerInterface;
+use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Store\Api\StoreRepositoryInterface;
+use Magento\Config\Model\ResourceModel\Config;
+use Magento\Framework\App\Config\Value;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\HTTP\Client\Curl;
 
-class Token extends \Magento\Framework\App\Config\Value
+class Token extends Value
 {
-    /**
-     * @var \Ebizmarts\MailChimp\Helper\Data
-     */
-    private $_helper;
-    /**
-     * @var \Magento\Config\Model\ResourceModel\Config
-     */
-    protected $resourceConfig;
-    /**
-     * @var \Magento\Framework\Stdlib\DateTime\DateTime
-     */
-    private $_date;
-    /**
-     * @var \Magento\Store\Model\StoreManager
-     */
-    private $_storeManager;
+    protected Curl $curl;
+    protected Config $resourceConfig;
+    private DateTime $date;
+    private ManagerInterface $messageManager;
+    private StoreRepositoryInterface $storeRepository;
 
     /**
-     * ApiKey constructor.
+     * Token constructor.
+     * 
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param ScopeConfigInterface $config
-     * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
-     * @param \Magento\Config\Model\ResourceModel\Config $resourceConfig
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
-     * @param \Ebizmarts\MailChimp\Helper\Data $helper
-     * @param \Magento\Store\Model\StoreManager $storeManager
+     * @param TypeListInterface $cacheTypeList
+     * @param Config $resourceConfig
+     * @param DateTime $date
+     * @param StoreRepositoryInterface $storeRepository
+     * @param ManagerInterface $messageManager
+     * @param Curl $curl
+     * @param AbstractResource|null $resource
+     * @param AbstractDb|null $resourceCollection
      * @param array $data
      */
     public function __construct(
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
-        \Magento\Framework\App\Config\ScopeConfigInterface $config,
-        \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
-        \Magento\Config\Model\ResourceModel\Config $resourceConfig,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        \Magento\Framework\Stdlib\DateTime\DateTime $date,
-        \Magento\Store\Model\StoreManager $storeManager,
+        ScopeConfigInterface $config,
+        TypeListInterface $cacheTypeList,
+        Config $resourceConfig,
+        DateTime $date,
+        StoreRepositoryInterface $storeRepository,
+        ManagerInterface $messageManager,
+        Curl $curl,
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->resourceConfig   = $resourceConfig;
-        $this->_date            = $date;
-        $this->_storeManager    = $storeManager;
+        $this->resourceConfig = $resourceConfig;
+        $this->date = $date;
+        $this->storeRepository = $storeRepository;
+        $this->messageManager = $messageManager;
+        $this->curl = $curl;
+
+        // Call parent constructor with Registry
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);
     }
 
+    /**
+     * Perform actions before saving
+     */
     public function beforeSave()
     {
         $generalData = $this->getData();
         $valid = $this->getApiResponse($this->getValue());
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $messageManager = $objectManager->create('Magento\Framework\Message\ManagerInterface');
+
         if ($valid == '0') {
-            $messageManager->addError(
+            $this->messageManager->addErrorMessage(
                 __("Invalid token. You can obtain your token in your Account Settings at
                     <a href='https://www.supermonitoring.com' target='_blank'>www.supermonitoring.com</a>.")
             );
         } else {
-            $messageManager->addSuccess(__("Changes have been saved."));
+            $this->messageManager->addSuccessMessage(__("Changes have been saved."));
             return parent::beforeSave();
         }
     }
 
+    /**
+     * Get API response
+     */
     public function getApiResponse($token)
     {
         $api = 'https://www.supermonitoring.com/API/';
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $api);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POST, true);
         $string = 'f=wp_token&token=' . $token;
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $string);
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return $result;
+        $this->curl->setOption(CURLOPT_RETURNTRANSFER, true);
+        $this->curl->setOption(CURLOPT_POST, true);
+        $this->curl->setOption(CURLOPT_POSTFIELDS, $string);
+        $this->curl->get($api);
+        return $this->curl->getBody();
     }
 }

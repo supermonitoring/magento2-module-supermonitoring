@@ -5,7 +5,7 @@
     </head>
     <body>
         <referenceContainer name="content">
-            <block class="Magento\Backend\Block\Template"  name="check.account"  template="Siteimpulse_Monitoring::account.phtml"  />
+            <block class="Siteimpulse\Monitoring\Block\Adminhtml\Display"  name="check.account"  template="Siteimpulse_Monitoring::account.phtml"  />
         </referenceContainer>
     </body>
 </page>

@@ -14,20 +14,22 @@ use Magento\Backend\App\Action\Context;
 
 class Index extends \Magento\Backend\App\Action
 {
-    protected $resultPageFactory;
-
     /**
-     * @param \Magento\Backend\App\Action\Context $context
+     * @var \Magento\Framework\View\Result\PageFactory
      */
-    public function __construct(Context $context)
-    {
-        parent::__construct($context);
-    }
+    protected $resultPageFactory;
+    
+    /**
+     * Index page
+     *
+     * @return \Magento\Backend\Model\View\Result\Page
+     */
     public function execute()
     {
         $resultPage = $this->resultFactory->create(\Magento\Framework\Controller\ResultFactory::TYPE_PAGE);
         return  $resultPage;
     }
+    
     /**
      * Check Permission.
      *

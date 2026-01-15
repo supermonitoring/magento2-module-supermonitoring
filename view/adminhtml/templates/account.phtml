@@ -1,8 +1,9 @@
-<?php $monitoring = $this->helper('Siteimpulse\Monitoring\Helper\Data');?>
-<?php if($monitoring->active() && $monitoring->getAuthorizationToken()):?>
+<?php $monitoring = $block->getDatahelper();?>
+<?php if ($monitoring->active() && $monitoring->getAuthorizationToken()):?>
 
-    <iframe id="frame" width="100%" frameborder="0" src="<?php echo $monitoring->getIframeUrl('settings');?>"></iframe>
-    <script type="text/javascript">
+    <iframe id="frame" width="100%" frameborder="0" 
+    src="<?= $block->escapeUrl($monitoring->getIframeUrl('settings'));?>"></iframe>
+    <script>
         function resizeIframe() {
             var height = document.documentElement.clientHeight;
             height -= document.getElementById('frame').offsetTop;
@@ -16,9 +17,11 @@
         document.getElementById('frame').onload = resizeIframe;
         window.onresize = resizeIframe;
     </script>
-<?php else :?>
+<?php else:?>
     <p>
-        <?php echo __("Invalid token. You can obtain your token in your Account Settings at ");?>
-        <a href="https://www.supermonitoring.com/" target="blank"><?php echo __("www.supermonitoring.com");?></a>
+        <?= $block->escapeHtml("Invalid token. You can obtain your token in your Account Settings at ");?>
+        <a href="https://www.supermonitoring.com/" target="blank">
+            <?= $block->escapeHtml("www.supermonitoring.com");?>
+        </a>
     </p>
 <?php endif;?>
